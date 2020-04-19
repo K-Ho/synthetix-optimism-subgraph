@@ -1,5 +1,5 @@
 import { RatesUpdated as RatesUpdatedEvent } from '../generated/ExchangeRates/ExchangeRates';
-import { AnswerUpdated as AnswerUpdatedEvent } from '../generated/AggregatorAUD/Aggregator';
+// import { AnswerUpdated as AnswerUpdatedEvent } from '../generated/AggregatorAUD/Aggregator';
 
 import { RatesUpdated, RateUpdate, AggregatorAnswer } from '../generated/schema';
 
@@ -82,27 +82,27 @@ contracts.set(
   '0x734e494b4b454900000000000000000000000000000000000000000000000000',
 );
 
-export function handleAggregatorAnswerUpdated(event: AnswerUpdatedEvent): void {
-  let entity = new AggregatorAnswer(event.transaction.hash.toHex());
-  entity.block = event.block.number;
-  entity.timestamp = event.block.timestamp;
-  let currencyKey = contracts.get(event.address.toHexString());
-  entity.currencyKey = ByteArray.fromHexString(currencyKey) as Bytes;
-  entity.synth = entity.currencyKey.toString();
-  // now multiply by 1e10 to turn the 8 decimal int to a 18 decimal one
-  entity.rate = event.params.current.times(BigInt.fromI32(10).pow(10));
-  entity.roundId = event.params.roundId;
-  entity.aggregator = event.address;
-  entity.save();
+// export function handleAggregatorAnswerUpdated(event: AnswerUpdatedEvent): void {
+//   let entity = new AggregatorAnswer(event.transaction.hash.toHex());
+//   entity.block = event.block.number;
+//   entity.timestamp = event.block.timestamp;
+//   let currencyKey = contracts.get(event.address.toHexString());
+//   entity.currencyKey = ByteArray.fromHexString(currencyKey) as Bytes;
+//   entity.synth = entity.currencyKey.toString();
+//   // now multiply by 1e10 to turn the 8 decimal int to a 18 decimal one
+//   entity.rate = event.params.current.times(BigInt.fromI32(10).pow(10));
+//   entity.roundId = event.params.roundId;
+//   entity.aggregator = event.address;
+//   entity.save();
 
-  // save aggregated event as rate update from v2.17.5 (Procyon)
-  if (event.block.number > BigInt.fromI32(9123410)) {
-    let rateEntity = new RateUpdate(event.transaction.hash.toHex() + '-' + entity.synth);
-    rateEntity.block = entity.block;
-    rateEntity.timestamp = entity.timestamp;
-    rateEntity.currencyKey = entity.currencyKey;
-    rateEntity.synth = entity.synth;
-    rateEntity.rate = entity.rate;
-    rateEntity.save();
-  }
-}
+//   // save aggregated event as rate update from v2.17.5 (Procyon)
+//   if (event.block.number > BigInt.fromI32(9123410)) {
+//     let rateEntity = new RateUpdate(event.transaction.hash.toHex() + '-' + entity.synth);
+//     rateEntity.block = entity.block;
+//     rateEntity.timestamp = entity.timestamp;
+//     rateEntity.currencyKey = entity.currencyKey;
+//     rateEntity.synth = entity.synth;
+//     rateEntity.rate = entity.rate;
+//     rateEntity.save();
+//   }
+// }
