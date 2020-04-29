@@ -1,13 +1,13 @@
 import {
   Synthetix,
   SynthExchange as SynthExchangeEvent,
-  ExchangeReclaim as ExchangeReclaimEvent,
-  ExchangeRebate as ExchangeRebateEvent,
+  // ExchangeReclaim as ExchangeReclaimEvent,
+  // ExchangeRebate as ExchangeRebateEvent,
 } from '../generated/Synthetix/Synthetix';
 import { AddressResolver } from '../generated/Synthetix/AddressResolver';
 import { ExchangeRates } from '../generated/Synthetix/ExchangeRates';
-import { Synthetix32 } from '../generated/Synthetix/Synthetix32';
-import { Synthetix as Synthetix4 } from '../generated/Synthetix4/Synthetix';
+// import { Synthetix32 } from '../generated/Synthetix/Synthetix32';
+// import { Synthetix as Synthetix4 } from '../generated/Synthetix4/Synthetix';
 
 import { Total, SynthExchange, Exchanger, ExchangeReclaim, ExchangeRebate } from '../generated/schema';
 
@@ -17,7 +17,7 @@ import { exchangesToIgnore } from './exchangesToIgnore';
 
 import { sUSD32, sUSD4 } from './common';
 
-let v219 = BigInt.fromI32(9518914); // Archernar v2.19.x Feb 20, 2020
+// let v219 = BigInt.fromI32(9518914); // Archernar v2.19.x Feb 20, 2020
 
 function getMetadata(): Total {
   let total = Total.load('mainnet');
@@ -80,7 +80,7 @@ function handleSynthExchange(event: SynthExchangeEvent, useBytes32: boolean): vo
   let toAmountInUSD = BigInt.fromI32(0);
   let feesInUSD = BigInt.fromI32(0);
 
-  if (event.block.number > v219) {
+  // if (event.block.number > v219) {
     let exRates = getExchangeRates(event.address);
 
     if (exRates != null) {
@@ -100,33 +100,33 @@ function handleSynthExchange(event: SynthExchangeEvent, useBytes32: boolean): vo
         toAmountInUSD = effectiveValueTryTo.value;
       }
     }
-  } else {
-    if (useBytes32) {
-      let synthetix = Synthetix32.bind(event.address);
+  // } else {
+  //   if (useBytes32) {
+  //     let synthetix = Synthetix32.bind(event.address);
 
-      let effectiveValueTry = synthetix.try_effectiveValue(
-        event.params.fromCurrencyKey,
-        event.params.fromAmount,
-        sUSD32,
-      );
-      if (!effectiveValueTry.reverted) {
-        fromAmountInUSD = effectiveValueTry.value;
-        toAmountInUSD = synthetix.effectiveValue(event.params.toCurrencyKey, event.params.toAmount, sUSD32);
-      }
-    } else {
-      let synthetix = Synthetix4.bind(event.address);
+  //     let effectiveValueTry = synthetix.try_effectiveValue(
+  //       event.params.fromCurrencyKey,
+  //       event.params.fromAmount,
+  //       sUSD32,
+  //     );
+  //     if (!effectiveValueTry.reverted) {
+  //       fromAmountInUSD = effectiveValueTry.value;
+  //       toAmountInUSD = synthetix.effectiveValue(event.params.toCurrencyKey, event.params.toAmount, sUSD32);
+  //     }
+  //   } else {
+  //     let synthetix = Synthetix4.bind(event.address);
 
-      let effectiveValueTry = synthetix.try_effectiveValue(
-        event.params.fromCurrencyKey,
-        event.params.fromAmount,
-        sUSD4,
-      );
-      if (!effectiveValueTry.reverted) {
-        fromAmountInUSD = effectiveValueTry.value;
-        toAmountInUSD = synthetix.effectiveValue(event.params.toCurrencyKey, event.params.toAmount, sUSD4);
-      }
-    }
-  }
+  //     let effectiveValueTry = synthetix.try_effectiveValue(
+  //       event.params.fromCurrencyKey,
+  //       event.params.fromAmount,
+  //       sUSD4,
+  //     );
+  //     if (!effectiveValueTry.reverted) {
+  //       fromAmountInUSD = effectiveValueTry.value;
+  //       toAmountInUSD = synthetix.effectiveValue(event.params.toCurrencyKey, event.params.toAmount, sUSD4);
+  //     }
+  //   }
+  // }
   feesInUSD = fromAmountInUSD.minus(toAmountInUSD);
 
   let entity = new SynthExchange(event.transaction.hash.toHex() + '-' + event.logIndex.toString());
@@ -143,7 +143,7 @@ function handleSynthExchange(event: SynthExchangeEvent, useBytes32: boolean): vo
   entity.timestamp = event.block.timestamp;
   entity.block = event.block.number;
   entity.gasPrice = event.transaction.gasPrice;
-  entity.network = 'mainnet';
+  entity.network = 'ovm';
   entity.save();
 
   trackExchanger(event.transaction.from);
@@ -157,40 +157,40 @@ function handleSynthExchange(event: SynthExchangeEvent, useBytes32: boolean): vo
   }
 }
 
-export function handleSynthExchange4(event: SynthExchangeEvent): void {
-  handleSynthExchange(event, false);
-}
+// export function handleSynthExchange4(event: SynthExchangeEvent): void {
+//   handleSynthExchange(event, false);
+// }
 
 export function handleSynthExchange32(event: SynthExchangeEvent): void {
   handleSynthExchange(event, true);
 }
 
-export function handleExchangeReclaim(event: ExchangeReclaimEvent): void {
-  let entity = new ExchangeReclaim(event.transaction.hash.toHex() + '-' + event.logIndex.toString());
-  entity.account = event.params.account;
-  entity.amount = event.params.amount;
-  entity.currencyKey = event.params.currencyKey;
-  entity.timestamp = event.block.timestamp;
-  entity.block = event.block.number;
-  entity.gasPrice = event.transaction.gasPrice;
-  let exRates = getExchangeRates(event.address);
-  if (exRates != null) {
-    entity.amountInUSD = exRates.effectiveValue(event.params.currencyKey, event.params.amount, sUSD32);
-  }
-  entity.save();
-}
+// export function handleExchangeReclaim(event: ExchangeReclaimEvent): void {
+//   let entity = new ExchangeReclaim(event.transaction.hash.toHex() + '-' + event.logIndex.toString());
+//   entity.account = event.params.account;
+//   entity.amount = event.params.amount;
+//   entity.currencyKey = event.params.currencyKey;
+//   entity.timestamp = event.block.timestamp;
+//   entity.block = event.block.number;
+//   entity.gasPrice = event.transaction.gasPrice;
+//   let exRates = getExchangeRates(event.address);
+//   if (exRates != null) {
+//     entity.amountInUSD = exRates.effectiveValue(event.params.currencyKey, event.params.amount, sUSD32);
+//   }
+//   entity.save();
+// }
 
-export function handleExchangeRebate(event: ExchangeRebateEvent): void {
-  let entity = new ExchangeRebate(event.transaction.hash.toHex() + '-' + event.logIndex.toString());
-  entity.account = event.params.account;
-  entity.amount = event.params.amount;
-  entity.currencyKey = event.params.currencyKey;
-  entity.timestamp = event.block.timestamp;
-  entity.block = event.block.number;
-  entity.gasPrice = event.transaction.gasPrice;
-  let exRates = getExchangeRates(event.address);
-  if (exRates != null) {
-    entity.amountInUSD = exRates.effectiveValue(event.params.currencyKey, event.params.amount, sUSD32);
-  }
-  entity.save();
-}
+// export function handleExchangeRebate(event: ExchangeRebateEvent): void {
+//   let entity = new ExchangeRebate(event.transaction.hash.toHex() + '-' + event.logIndex.toString());
+//   entity.account = event.params.account;
+//   entity.amount = event.params.amount;
+//   entity.currencyKey = event.params.currencyKey;
+//   entity.timestamp = event.block.timestamp;
+//   entity.block = event.block.number;
+//   entity.gasPrice = event.transaction.gasPrice;
+//   let exRates = getExchangeRates(event.address);
+//   if (exRates != null) {
+//     entity.amountInUSD = exRates.effectiveValue(event.params.currencyKey, event.params.amount, sUSD32);
+//   }
+//   entity.save();
+// }
