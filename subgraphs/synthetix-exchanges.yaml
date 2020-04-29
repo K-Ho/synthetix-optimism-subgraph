@@ -5,10 +5,10 @@ schema:
   file: ./synthetix-exchanges.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Synthetix-OVM
+    name: Synthetix
     network: ovm
     source:
-      address: '0xfbc3e971bf0A4CF5fC3B0d4d462Da3910830E07c' # ProxySynthetix
+      address: '0x26F58c87E70034B567B08A8434631beA4b698A03' # ProxySynthetix
       abi: Synthetix
     mapping:
       kind: ethereum/events
@@ -20,6 +20,10 @@ dataSources:
       abis:
         - name: Synthetix
           file: ../abis/Synthetix.json
+        - name: AddressResolver
+          file: ../abis/AddressResolver.json
+        - name: ExchangeRates
+          file: ../abis/ExchangeRates.json
       eventHandlers:
         - event: SynthExchange(indexed address,bytes32,uint256,bytes32,uint256,address)
-          handler: handleSynthExchange
+          handler: handleSynthExchange32
