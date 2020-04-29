@@ -1,6 +1,6 @@
 import { Bytes, ByteArray, BigInt } from '@graphprotocol/graph-ts';
 
-import { Synthetix32 as SNX } from '../generated/Synthetix/Synthetix32';
+// import { Synthetix32 as SNX } from '../generated/Synthetix/Synthetix32';
 
 export let sUSD32 = ByteArray.fromHexString(
   '0x7355534400000000000000000000000000000000000000000000000000000000',
